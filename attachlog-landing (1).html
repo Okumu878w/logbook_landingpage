@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AttachLog — Your Attachment Logbook, Sorted</title>
+  <meta name="description" content="The simplest way for Kenyan university students to manage their industrial attachment logbook. KES 40/week." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink: #1C1917;
+      --ink-mid: #44403C;
+      --ink-light: #78716C;
+      --cream: #F7F3ED;
+      --cream-dark: #EDE7DC;
+      --gold: #B45309;
+      --gold-mid: #D97706;
+      --gold-light: #FEF3C7;
+      --green: #166534;
+      --green-light: #DCFCE7;
+      --white: #FFFFFF;
+      --border: rgba(28,25,23,0.10);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--cream);
+      color: var(--ink);
+      font-size: 16px;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 2rem;
+      background: rgba(247,243,237,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      display: flex; align-items: center; gap: 10px;
+      font-family: 'Playfair Display', serif;
+      font-size: 20px; color: var(--ink);
+      text-decoration: none;
+    }
+
+    .logo-mark {
+      width: 36px; height: 36px;
+      background: var(--ink);
+      border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Playfair Display', serif;
+      font-size: 18px; font-weight: 700;
+      color: var(--gold-mid);
+    }
+
+    .nav-cta {
+      background: var(--ink); color: white;
+      padding: 9px 22px; border-radius: 8px;
+      font-size: 14px; font-weight: 500;
+      text-decoration: none; font-family: 'Outfit', sans-serif;
+      transition: opacity .15s;
+    }
+    .nav-cta:hover { opacity: .85; }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      padding: 8rem 1.5rem 4rem;
+      position: relative; overflow: hidden;
+    }
+
+    .hero-blob-1 {
+      position: absolute; width: 700px; height: 700px;
+      background: radial-gradient(circle, rgba(180,83,9,0.09) 0%, transparent 65%);
+      top: -100px; right: -150px; border-radius: 50%;
+      pointer-events: none;
+    }
+    .hero-blob-2 {
+      position: absolute; width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(22,101,52,0.07) 0%, transparent 65%);
+      bottom: 0; left: -100px; border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 7px;
+      background: var(--gold-light); color: var(--gold);
+      border: 1px solid rgba(180,83,9,0.2);
+      padding: 6px 16px; border-radius: 20px;
+      font-size: 13px; font-weight: 600;
+      margin-bottom: 1.75rem;
+      animation: fadeUp .5s ease both;
+    }
+
+    .hero-badge::before {
+      content: '';
+      width: 7px; height: 7px;
+      background: var(--gold-mid);
+      border-radius: 50%;
+      animation: pulse 2s ease infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: .5; transform: scale(.8); }
+    }
+
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.5rem, 7vw, 5rem);
+      font-weight: 400; line-height: 1.1;
+      max-width: 800px;
+      margin-bottom: 1.5rem;
+      animation: fadeUp .5s .1s ease both;
+    }
+
+    h1 em {
+      font-style: italic; color: var(--gold);
+    }
+
+    .hero-sub {
+      font-size: clamp(1rem, 2.5vw, 1.2rem);
+      color: var(--ink-light);
+      max-width: 520px;
+      margin-bottom: 2.5rem;
+      line-height: 1.7;
+      animation: fadeUp .5s .2s ease both;
+    }
+
+    .hero-actions {
+      display: flex; gap: 12px; flex-wrap: wrap;
+      justify-content: center;
+      animation: fadeUp .5s .3s ease both;
+    }
+
+    .btn-primary {
+      background: var(--ink); color: white;
+      padding: 14px 32px; border-radius: 10px;
+      font-size: 15px; font-weight: 600;
+      text-decoration: none; font-family: 'Outfit', sans-serif;
+      transition: all .15s;
+      display: inline-flex; align-items: center; gap: 8px;
+    }
+    .btn-primary:hover { background: var(--ink-mid); transform: translateY(-1px); box-shadow: 0 8px 24px rgba(28,25,23,0.2); }
+
+    .btn-ghost {
+      background: transparent; color: var(--ink);
+      padding: 14px 28px; border-radius: 10px;
+      font-size: 15px; font-weight: 500;
+      text-decoration: none; font-family: 'Outfit', sans-serif;
+      border: 1px solid var(--border);
+      transition: all .15s;
+      display: inline-flex; align-items: center; gap: 8px;
+    }
+    .btn-ghost:hover { background: var(--cream-dark); }
+
+    .hero-price {
+      margin-top: 1.5rem;
+      font-size: 13px; color: var(--ink-light);
+      animation: fadeUp .5s .4s ease both;
+    }
+
+    /* ── PHONE MOCKUP ── */
+    .mockup-wrap {
+      margin-top: 4rem;
+      animation: fadeUp .6s .4s ease both;
+      position: relative;
+    }
+
+    .phone {
+      width: 260px;
+      background: var(--ink);
+      border-radius: 36px;
+      padding: 14px;
+      box-shadow: 0 40px 80px rgba(28,25,23,0.25), 0 0 0 1px rgba(255,255,255,0.06);
+      margin: 0 auto;
+    }
+
+    .phone-screen {
+      background: var(--cream);
+      border-radius: 26px;
+      overflow: hidden;
+      aspect-ratio: 9/18;
+      display: flex; flex-direction: column;
+    }
+
+    .phone-bar {
+      background: var(--ink);
+      padding: 12px 16px;
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    .phone-bar-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 13px; color: white;
+    }
+
+    .phone-content {
+      flex: 1; padding: 14px 12px;
+      display: flex; flex-direction: column; gap: 10px;
+      overflow: hidden;
+    }
+
+    .phone-stat-row {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .phone-stat {
+      background: white; border-radius: 10px;
+      padding: 10px; border: 1px solid var(--border);
+    }
+
+    .phone-stat-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px; line-height: 1;
+    }
+
+    .phone-stat-label {
+      font-size: 9px; color: var(--ink-light); margin-top: 2px;
+    }
+
+    .phone-card {
+      background: white; border-radius: 10px;
+      padding: 10px 12px; border: 1px solid var(--border);
+    }
+
+    .phone-card-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 12px; margin-bottom: 4px;
+    }
+
+    .phone-card-text {
+      font-size: 9px; color: var(--ink-light); line-height: 1.5;
+    }
+
+    .phone-badge {
+      display: inline-block;
+      background: var(--gold-light); color: var(--gold);
+      font-size: 8px; font-weight: 600;
+      padding: 2px 7px; border-radius: 10px;
+      margin-top: 5px;
+    }
+
+    .phone-bottom-nav {
+      background: white;
+      border-top: 1px solid var(--border);
+      display: flex;
+      padding: 8px 4px;
+    }
+
+    .phone-nav-item {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; gap: 2px;
+      font-size: 7px; color: var(--ink-light);
+    }
+
+    .phone-nav-item.active { color: var(--gold-mid); }
+    .phone-nav-dot { width: 16px; height: 16px; border-radius: 4px; background: var(--cream-dark); display: flex; align-items: center; justify-content: center; font-size: 9px; }
+    .phone-nav-item.active .phone-nav-dot { background: var(--gold-light); }
+
+    /* ── SECTIONS ── */
+    section { padding: 5rem 1.5rem; }
+
+    .container { max-width: 1000px; margin: 0 auto; }
+
+    .section-label {
+      font-size: 12px; font-weight: 600; letter-spacing: .12em;
+      text-transform: uppercase; color: var(--gold);
+      margin-bottom: .75rem;
+    }
+
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 400; line-height: 1.2;
+      margin-bottom: 1rem;
+    }
+
+    .section-sub {
+      font-size: 1rem; color: var(--ink-light);
+      max-width: 520px; line-height: 1.7;
+    }
+
+    /* ── PROBLEM ── */
+    .problem-section {
+      background: var(--ink); color: white;
+    }
+
+    .problem-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-top: 3rem;
+    }
+
+    .problem-card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      padding: 1.75rem;
+    }
+
+    .problem-icon {
+      font-size: 2rem; margin-bottom: 1rem;
+    }
+
+    .problem-card h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem; font-weight: 400;
+      margin-bottom: .5rem; color: white;
+    }
+
+    .problem-card p {
+      font-size: 14px; color: rgba(255,255,255,0.55); line-height: 1.65;
+    }
+
+    /* ── FEATURES ── */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.25rem;
+      margin-top: 3rem;
+    }
+
+    .feature-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.75rem;
+      transition: all .2s;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 32px rgba(28,25,23,0.1);
+    }
+
+    .feature-icon {
+      width: 44px; height: 44px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem;
+      margin-bottom: 1rem;
+    }
+
+    .feature-card h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.15rem; font-weight: 400;
+      margin-bottom: .5rem;
+    }
+
+    .feature-card p { font-size: 14px; color: var(--ink-light); line-height: 1.65; }
+
+    /* ── HOW IT WORKS ── */
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+      margin-top: 3rem;
+      position: relative;
+    }
+
+    .steps::before {
+      content: '';
+      position: absolute;
+      top: 28px; left: 60px; right: 60px;
+      height: 2px;
+      background: linear-gradient(to right, var(--border), var(--gold-mid), var(--border));
+    }
+
+    .step {
+      text-align: center;
+      position: relative;
+    }
+
+    .step-num {
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      background: var(--ink); color: white;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      margin: 0 auto 1rem;
+      position: relative; z-index: 1;
+      box-shadow: 0 0 0 6px var(--cream);
+    }
+
+    .step h3 {
+      font-size: 15px; font-weight: 600;
+      margin-bottom: .35rem;
+    }
+
+    .step p { font-size: 13px; color: var(--ink-light); line-height: 1.6; }
+
+    /* ── PRICING ── */
+    .pricing-section { background: var(--cream-dark); }
+
+    .pricing-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 3rem;
+      max-width: 480px;
+      margin: 3rem auto 0;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(28,25,23,0.1);
+      position: relative; overflow: hidden;
+    }
+
+    .pricing-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 4px;
+      background: linear-gradient(to right, var(--gold), var(--gold-mid));
+    }
+
+    .pricing-amount {
+      font-family: 'Playfair Display', serif;
+      font-size: 4rem; line-height: 1;
+      margin-bottom: .25rem;
+    }
+
+    .pricing-period { font-size: 14px; color: var(--ink-light); margin-bottom: 2rem; }
+
+    .pricing-features {
+      list-style: none;
+      text-align: left;
+      margin-bottom: 2rem;
+      display: flex; flex-direction: column; gap: 12px;
+    }
+
+    .pricing-features li {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 15px;
+    }
+
+    .pricing-features li::before {
+      content: '✓';
+      width: 22px; height: 22px;
+      background: var(--green-light); color: var(--green);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    /* ── TESTIMONIALS ── */
+    .testimonials {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+      margin-top: 3rem;
+    }
+
+    .testimonial {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.5rem;
+    }
+
+    .testimonial-text {
+      font-size: 15px; line-height: 1.7;
+      color: var(--ink-mid);
+      margin-bottom: 1rem;
+      font-style: italic;
+    }
+
+    .testimonial-text::before { content: '"'; color: var(--gold); font-size: 1.5rem; font-family: 'Playfair Display', serif; }
+
+    .testimonial-author {
+      display: flex; align-items: center; gap: 10px;
+    }
+
+    .testimonial-avatar {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: var(--gold-mid);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 600; color: white;
+    }
+
+    .testimonial-name { font-size: 14px; font-weight: 600; }
+    .testimonial-role { font-size: 12px; color: var(--ink-light); }
+
+    /* ── CTA ── */
+    .cta-section {
+      background: var(--ink); color: white;
+      text-align: center;
+    }
+
+    .cta-section .section-title { color: white; }
+    .cta-section .section-sub { color: rgba(255,255,255,0.55); margin: 0 auto 2.5rem; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--ink); color: rgba(255,255,255,0.4);
+      text-align: center;
+      padding: 2rem;
+      font-size: 13px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+
+    footer a { color: var(--gold); text-decoration: none; }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .reveal {
+      opacity: 0; transform: translateY(24px);
+      transition: opacity .6s ease, transform .6s ease;
+    }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    /* ── TABLET ── */
+    @media (max-width: 1024px) {
+      .problem-grid { grid-template-columns: 1fr 1fr; }
+      .steps { grid-template-columns: 1fr 1fr; }
+      .steps::before { display: none; }
+    }
+
+    /* ── MOBILE ── */
+    @media (max-width: 768px) {
+      /* Nav */
+      nav { padding: .85rem 1rem; }
+      .nav-cta { padding: 8px 14px; font-size: 13px; }
+
+      /* Hero */
+      .hero { padding: 7rem 1rem 3rem; }
+      .hero-badge { font-size: 12px; padding: 5px 13px; }
+      .hero-sub { font-size: .95rem; }
+      .hero-actions { flex-direction: column; align-items: center; gap: 10px; }
+      .hero-actions a { width: 100%; max-width: 320px; justify-content: center; }
+      .hero-price { font-size: 12px; }
+
+      /* Phone mockup smaller on mobile */
+      .phone { width: 220px; }
+
+      /* Sections */
+      section { padding: 3.5rem 1rem; }
+      .section-title { font-size: 1.7rem; }
+      .section-sub { font-size: .9rem; }
+
+      /* Grids all single column */
+      .problem-grid { grid-template-columns: 1fr; gap: 1rem; }
+      .features-grid { grid-template-columns: 1fr; gap: 1rem; }
+      .testimonials { grid-template-columns: 1fr; gap: 1rem; }
+      .steps { grid-template-columns: 1fr; gap: 1.25rem; }
+      .steps::before { display: none; }
+
+      /* Problem cards */
+      .problem-card { padding: 1.25rem; }
+      .problem-icon { font-size: 1.5rem; margin-bottom: .75rem; }
+
+      /* Feature cards */
+      .feature-card { padding: 1.25rem; }
+      .feature-card:hover { transform: none; }
+
+      /* Steps */
+      .step { display: flex; align-items: flex-start; gap: 16px; text-align: left; }
+      .step-num { margin: 0; flex-shrink: 0; width: 44px; height: 44px; font-size: 1.1rem; }
+      .step-content { flex: 1; }
+
+      /* Pricing */
+      .pricing-card { padding: 1.75rem 1.25rem; border-radius: 16px; }
+      .pricing-amount { font-size: 3rem; }
+      .pricing-features li { font-size: 14px; }
+
+      /* Testimonials */
+      .testimonial { padding: 1.25rem; }
+      .testimonial-text { font-size: 14px; }
+
+      /* CTA */
+      .cta-section a.btn-primary {
+        width: 100%; max-width: 320px;
+        justify-content: center;
+        padding: 14px 24px;
+        font-size: 15px;
+      }
+
+      /* Footer */
+      footer { font-size: 12px; padding: 1.5rem 1rem; }
+    }
+
+    @media (max-width: 400px) {
+      h1 { font-size: 2rem; }
+      .phone { width: 190px; }
+      .pricing-amount { font-size: 2.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">
+    <div class="logo-mark">S</div>
+    AttachLog
+  </a>
+  <a href="https://attachment-logbook.vercel.app/" class="nav-cta" target="_blank">Get Started →</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-blob-1"></div>
+  <div class="hero-blob-2"></div>
+
+  <div class="hero-badge">🇰🇪 Built for Kenyan university students</div>
+
+  <h1>Your attachment logbook,<br><em>sorted.</em></h1>
+
+  <p class="hero-sub">
+    Stop struggling to remember what you did last week. AttachLog helps you log your daily activities in minutes — from your phone, every day.
+  </p>
+
+  <div class="hero-actions">
+    <a href="https://attachment-logbook.vercel.app/" class="btn-primary" target="_blank">
+      Start logging free →
+    </a>
+    <a href="#how" class="btn-ghost">See how it works</a>
+  </div>
+
+  <p class="hero-price">KES 40/week · Works on any device · No installation needed</p>
+
+  <!-- Phone mockup -->
+  <div class="mockup-wrap">
+    <div class="phone">
+      <div class="phone-screen">
+        <div class="phone-bar">
+          <div class="logo-mark" style="width:22px;height:22px;font-size:11px;border-radius:5px;">S</div>
+          <div class="phone-bar-logo">AttachLog</div>
+        </div>
+        <div class="phone-content">
+          <div style="font-family:'Playfair Display',serif;font-size:13px;color:#1C1917;">Good morning, Peter 👋</div>
+          <div class="phone-stat-row">
+            <div class="phone-stat">
+              <div class="phone-stat-num" style="color:#B45309;">24</div>
+              <div class="phone-stat-label">Total entries</div>
+            </div>
+            <div class="phone-stat">
+              <div class="phone-stat-num" style="color:#0F766E;">6</div>
+              <div class="phone-stat-label">Weeks logged</div>
+            </div>
+            <div class="phone-stat">
+              <div class="phone-stat-num" style="color:#166534;">6</div>
+              <div class="phone-stat-label">Weeks paid</div>
+            </div>
+            <div class="phone-stat">
+              <div class="phone-stat-num" style="color:#B91C1C;">🔥 5</div>
+              <div class="phone-stat-label">Day streak</div>
+            </div>
+          </div>
+          <div class="phone-card">
+            <div class="phone-card-title">Wednesday</div>
+            <div class="phone-card-text">Assisted the IT department in configuring network switches and setting up user accounts on the internal system.</div>
+            <div class="phone-badge">Week 6</div>
+          </div>
+          <div class="phone-card" style="background:#FEF3C7;border-color:rgba(180,83,9,0.2);">
+            <div class="phone-card-title" style="font-size:10px;color:#B45309;">✨ AI Expanded</div>
+            <div class="phone-card-text">Supported the IT team in the installation and configuration of network switching equipment...</div>
+          </div>
+        </div>
+        <div class="phone-bottom-nav">
+          <div class="phone-nav-item active">
+            <div class="phone-nav-dot">🏠</div>
+            <span>Home</span>
+          </div>
+          <div class="phone-nav-item">
+            <div class="phone-nav-dot">➕</div>
+            <span>New</span>
+          </div>
+          <div class="phone-nav-item">
+            <div class="phone-nav-dot">📋</div>
+            <span>Entries</span>
+          </div>
+          <div class="phone-nav-item">
+            <div class="phone-nav-dot">💳</div>
+            <span>Pay</span>
+          </div>
+          <div class="phone-nav-item">
+            <div class="phone-nav-dot">👤</div>
+            <span>Profile</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEM -->
+<section class="problem-section">
+  <div class="container">
+    <div class="section-label" style="color:rgba(255,255,255,0.4);">The problem</div>
+    <h2 class="section-title" style="color:white;">Every student on attachment<br>knows this pain.</h2>
+    <div class="problem-grid reveal">
+      <div class="problem-card">
+        <div class="problem-icon">😩</div>
+        <h3>Writing it the night before</h3>
+        <p>You try to remember 5 days of work at 11pm. You end up writing vague, repetitive entries that embarrass you.</p>
+      </div>
+      <div class="problem-card">
+        <div class="problem-icon">📝</div>
+        <h3>Pages of blank logbook</h3>
+        <p>The physical logbook sits on your desk getting dusty. Filling it feels like homework, so you keep pushing it off.</p>
+      </div>
+      <div class="problem-card">
+        <div class="problem-icon">😰</div>
+        <h3>Supervisor embarrassment</h3>
+        <p>Your supervisor asks to see your logbook. You have three entries for a month of work. Not a good look.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section>
+  <div class="container">
+    <div class="section-label reveal">What AttachLog does</div>
+    <h2 class="section-title reveal">Everything you need.<br>Nothing you don't.</h2>
+    <p class="section-sub reveal">Designed specifically for industrial attachment students in Kenyan universities.</p>
+
+    <div class="features-grid reveal">
+      <div class="feature-card">
+        <div class="feature-icon" style="background:#FEF3C7;color:#B45309;">📓</div>
+        <h3>Daily Activity Logging</h3>
+        <p>Log your AM and PM activities every day. Takes 2 minutes. Never fall behind again — your entries are organized by date and week automatically.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:#DCFCE7;color:#166534;">📊</div>
+        <h3>Progress Dashboard</h3>
+        <p>See your streak, weeks logged, and total entries at a glance. Know exactly how far along your attachment is.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:#CCFBF1;color:#0F766E;">📱</div>
+        <h3>Works on Any Device</h3>
+        <p>Log from your phone during lunch break, or from a laptop at home. Install it as an app on your phone home screen — no app store needed.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:#FEE2E2;color:#B91C1C;">🔒</div>
+        <h3>Secure & Private</h3>
+        <p>Your logbook data is yours alone. Stored securely in the cloud — you can access it anytime, even after attachment ends.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how" style="background:var(--cream-dark);">
+  <div class="container">
+    <div class="section-label reveal">How it works</div>
+    <h2 class="section-title reveal">Up and running in 3 minutes.</h2>
+
+    <div class="steps reveal">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content"><h3>Create account</h3><p>Sign up with your email and fill in your programme details. Takes 60 seconds.</p></div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content"><h3>Pay for a week</h3><p>Pay KES 40 via M-Pesa or card using Paystack. Secure and instant.</p></div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content"><h3>Log daily</h3><p>Every day, add your activities and skills. 2 minutes per entry.</p></div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content"><h3>Stay ahead</h3><p>Never scramble at submission time. Your logbook writes itself as you go.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section>
+  <div class="container">
+    <div class="section-label reveal">What students say</div>
+    <h2 class="section-title reveal">Real students. Real results.</h2>
+
+    <div class="testimonials reveal">
+      <div class="testimonial">
+        <p class="testimonial-text">I used to fill my logbook the Sunday before submission. With AttachLog I actually log every day and my supervisor noticed the difference."</p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar">JK</div>
+          <div>
+            <div class="testimonial-name">James K.</div>
+            <div class="testimonial-role">BSc. IT ·University of  Nairobi</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial">
+        <p class="testimonial-text">KES 40 a week is nothing. I spend more than that . My logbook has never looked this professional."</p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar">MW</div>
+          <div>
+            <div class="testimonial-name">Mary W.</div>
+            <div class="testimonial-role">BCS ·University of Eldoret</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial">
+        <p class="testimonial-text">I installed it on my phone like a real app. Now I log during lunch break. So simple, I wish I had this in my first attachment."</p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar">BO</div>
+          <div>
+            <div class="testimonial-name">Brian O.</div>
+            <div class="testimonial-role">BCom · Maseno university</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing-section">
+  <div class="container" style="text-align:center;">
+    <div class="section-label reveal">Pricing</div>
+    <h2 class="section-title reveal">Simple. Affordable. Fair.</h2>
+    <p class="section-sub reveal" style="margin:0 auto;">No monthly subscriptions. No hidden fees. Pay only for the weeks you're on attachment.</p>
+
+    <div class="pricing-card reveal">
+      <div class="pricing-amount">KES 40</div>
+      <div class="pricing-period">per week of attachment</div>
+      <ul class="pricing-features">
+        <li>Unlimited daily log entries</li>
+        <li>Progress dashboard & charts</li>
+        <li>Works on phone & computer</li>
+        <li>Install as phone app (PWA)</li>
+        <li>Secure cloud storage</li>
+        <li>Pay week by week via M-Pesa</li>
+      </ul>
+      <a href="https://attachment-logbook.vercel.app/" class="btn-primary" target="_blank" style="width:100%;justify-content:center;font-size:16px;padding:16px;">
+        Start your logbook →
+      </a>
+      <p style="font-size:13px;color:var(--ink-light);margin-top:1rem;">Less than a chapati per day. 🫓</p>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="container">
+    <h2 class="section-title reveal">Don't submit an empty logbook.</h2>
+    <p class="section-sub reveal">Start logging today. Your future self (and your supervisor) will thank you.</p>
+    <a href="https://attachment-logbook.vercel.app/" class="btn-primary reveal" target="_blank" style="font-size:16px;padding:16px 40px;">
+      Get started — it's free to sign up →
+    </a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2026 AttachLog · Built for Kenyan university students · <a href="https://attachment-logbook.vercel.app/">attachment-logbook.vercel.app</a></p>
+</footer>
+
+<script>
+  // Scroll reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible')
+        // stagger children
+        e.target.querySelectorAll('.problem-card, .feature-card, .step, .testimonial').forEach((child, i) => {
+          child.style.transitionDelay = (i * 0.1) + 's'
+          child.style.opacity = '0'
+          child.style.transform = 'translateY(20px)'
+          child.style.transition = 'opacity .5s ease, transform .5s ease'
+          setTimeout(() => {
+            child.style.opacity = '1'
+            child.style.transform = 'none'
+          }, i * 100 + 100)
+        })
+      }
+    })
+  }, { threshold: 0.1 })
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el))
+</script>
+</body>
+</html>
